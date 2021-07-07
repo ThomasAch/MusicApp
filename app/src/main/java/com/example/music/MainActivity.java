@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // not entirly sure what this does, but i think it is used for getting the correct screen? just guessing tbh
+        // not entirely sure what this does, but i think it is used for getting the correct screen? just guessing tbh
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //for when the user drags the timebar
+        //for when the user drags the timebar, update the song
         //https://www.geeksforgeeks.org/android-creating-a-seekbar/
         timeBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
             @Override
@@ -101,10 +101,9 @@ public class MainActivity extends AppCompatActivity {
                 // increment 1 in progress and
                 // increase the textsize
                 // with the value of progress
-                if (fromUser){
-                    Log.d("progress", "progress:" +  progress);
-                    player.seekTo((int) ((float) progress / timeBar.getMax() * audioDuration));
-
+                if (fromUser && player != null){
+//                    Log.d("progress", "progress:" +  progress);
+                    player.seekTo((int) ((float) progress / timeBar.getMax() * audioDuration)); //sets the player to the correct position
                     audioCurrentTime.setText(getTimeLayout(player.getCurrentPosition()));
                 }
             }
