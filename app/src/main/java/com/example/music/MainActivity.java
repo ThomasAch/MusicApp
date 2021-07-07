@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 // increment 1 in progress and
                 // increase the textsize
                 // with the value of progress
-                if (fromUser == true){
+                if (fromUser){
                     Log.d("progress", "progress:" +  progress);
                     player.seekTo((int) ((float) progress / timeBar.getMax() * audioDuration));
 
