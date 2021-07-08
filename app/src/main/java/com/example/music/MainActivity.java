@@ -2,6 +2,9 @@ package com.example.music;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 //import android.os.Vibrator;
@@ -25,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     static TextView audioDurationText;
     static TextView audioCurrentTime;
     static SeekBar timeBar;
+    static ImageView audioCoverImage;
 
     //variables that I need to be accessed throughout the class
     static int audioDuration;
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         audioDurationText = (TextView) findViewById(R.id.audioDuration);
         audioCurrentTime = (TextView) findViewById(R.id.audioCurrentTime);
         timeBar = (SeekBar) findViewById(R.id.timeBar);
+        audioCoverImage = (ImageView) findViewById(R.id.audioCoverImage);
 
         //button i sometimes use to test stuff
         testBtn.setOnClickListener(new View.OnClickListener(){
@@ -123,11 +129,36 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // any time new audio is gonna be played, this function should be called
+    //any time new audio is gonna be played, this function should be called
     public static void setupAudio() {
         audioName.setText(files[0].getName().substring(0, files[0].getName().lastIndexOf(".")));
         audioDuration = player.getDuration(); // gets length of audio clip
         audioDurationText.setText(getTimeLayout(audioDuration));
+        getAudioPic(files[0].getPath());
+    }
+
+    //method to get the albumcover from mp3 files
+    public static void getAudioPic(String songPath) {
+        //https://stackoverflow.com/a/21549403
+        android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(songPath);
+
+        byte [] data = mmr.getEmbeddedPicture();
+        //coverart is an Imageview object
+
+        // convert the byte array to a bitmap
+        if(data != null)
+        {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            audioCoverImage.setImageBitmap(bitmap); //associated cover art in bitmap
+        }
+        else
+        {
+            audioCoverImage.setImageResource(R.drawable.play_img); //any default cover resourse folder
+        }
+
+        audioCoverImage.setAdjustViewBounds(true);
+//        coverart.setLayoutParams(new LinearLayout.LayoutParams(500, 500));
     }
 
     // formats time given (ms) into a more regular format for viewing (min and sec)
