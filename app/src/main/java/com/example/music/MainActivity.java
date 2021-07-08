@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     //variables that I need to be accessed throughout the class
     static int audioDuration;
+    static int audioFileIndex = 0;
 
     //get the files in the music folder
 //      https://stackoverflow.com/questions/8646984/how-to-list-files-in-an-android-directory
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     static File[] files = directory.listFiles();
 //        Log.d("Files", "Size: "+ files.length);
 //        for (int i = 0; i < files.length; i++){Log.d("Files", "FileName:" + files[i].getName());}
-//        Log.d("File", files[0].getPath());
+//        Log.d("File", files[audioFileIndex].getPath());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         // a bunch of views objects that i need to reference
         final ImageButton play_pause_btn = (ImageButton) findViewById(R.id.play_pause_btn);
+        final Button back_btn = (Button) findViewById(R.id.back_btn);
+        final Button next_btn = (Button) findViewById(R.id.next_btn);
         final Button testBtn = (Button) findViewById(R.id.testBtn);
         audioName = (TextView) findViewById(R.id.audio_name);
         audioDurationText = (TextView) findViewById(R.id.audioDuration);
@@ -76,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //https://www.youtube.com/watch?reload=9&v=C_Ka7cKwXW0
                     if (player == null){
-                        player = MediaPlayer.create(v.getContext(), Uri.parse(files[0].getPath())); //I have to figure out how to put this in the setup function for later (not sure what "v.getContext()" does but it is preventing me from moving it)
+                        player = MediaPlayer.create(v.getContext(), Uri.parse(files[audioFileIndex].getPath())); //I have to figure out how to put this in the setup function for later (not sure what "v.getContext()" does but it is preventing me from moving it)
 //                        player = MediaPlayer.create(v.getContext(), R.raw.long_bruh); //the og sound i used for testing
                         setupAudio();
                     }
@@ -96,6 +99,18 @@ public class MainActivity extends AppCompatActivity {
 
                     play = true;
                 }
+            }
+        });
+
+        back_btn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                Log.d("printing", "to see in logcat");
+            }
+        });
+
+        next_btn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                Log.d("printing", "to see in logcat");
             }
         });
 
@@ -131,10 +146,11 @@ public class MainActivity extends AppCompatActivity {
 
     //any time new audio is gonna be played, this function should be called
     public static void setupAudio() {
-        audioName.setText(files[0].getName().substring(0, files[0].getName().lastIndexOf(".")));
+//        player = MediaPlayer.create(this, Uri.parse(files[audioFileIndex].getPath())); //dosnt work rn, but need it to
+        audioName.setText(files[audioFileIndex].getName().substring(0, files[audioFileIndex].getName().lastIndexOf(".")));
         audioDuration = player.getDuration(); // gets length of audio clip
         audioDurationText.setText(getTimeLayout(audioDuration));
-        getAudioPic(files[0].getPath());
+        getAudioPic(files[audioFileIndex].getPath());
     }
 
     //method to get the albumcover from mp3 files
@@ -176,6 +192,18 @@ public class MainActivity extends AppCompatActivity {
             SecString = "0" + SecString;
         }
         return MinString + ":" + SecString;
+    }
+
+    //used to go to the next/previous song by going to the next index in the list
+    static int getNextorPriviousIndex(int forwardOrBackwards, int currentIndex, int lengthOfList) {
+        currentIndex += forwardOrBackwards;
+        if (currentIndex < 0){
+            currentIndex = lengthOfList;
+        }
+        else if (currentIndex > lengthOfList){
+            currentIndex = 0;
+        }
+        return currentIndex;
     }
 
     //creates a new thread to be constantly updating the current progress of the audio
