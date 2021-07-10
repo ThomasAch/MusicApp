@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     //views that I need to be accessed throughout the class
     static MediaPlayer player;
+    static ImageButton play_pause_btn;
     static TextView audioName;
     static TextView audioDurationText;
     static TextView audioCurrentTime;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     //variables that I need to be accessed throughout the class
     static int audioDuration;
+    static boolean play = true;
     static int audioFileIndex = 0;
 
     //get the files in the music folder
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // a bunch of views objects that i need to reference
-        final ImageButton play_pause_btn = (ImageButton) findViewById(R.id.play_pause_btn);
+        play_pause_btn = (ImageButton) findViewById(R.id.play_pause_btn);
         final Button back_btn = (Button) findViewById(R.id.back_btn);
         final Button next_btn = (Button) findViewById(R.id.next_btn);
         final Button testBtn = (Button) findViewById(R.id.testBtn);
@@ -71,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
 
         // for when the play/pause button is clicked
         play_pause_btn.setOnClickListener(new View.OnClickListener(){
-            boolean play = true;
             public void onClick(View v) { //not sure what the "v" is for but it is a pain to take some stuff out of here and put it into other places
                 if (play){
                     //changes btn icon from play to pause and visa versa
@@ -79,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
                     //https://www.youtube.com/watch?reload=9&v=C_Ka7cKwXW0
                     if (player == null){
-                        player = MediaPlayer.create(v.getContext(), Uri.parse(files[audioFileIndex].getPath())); //I have to figure out how to put this in the setup function for later (not sure what "v.getContext()" does but it is preventing me from moving it)
+//                        player = MediaPlayer.create(MainActivity.this, Uri.parse(files[audioFileIndex].getPath())); //I have to figure out how to put this in the setup function for later (not sure what "v.getContext()" does but it is preventing me from moving it)
+//                        player = MediaPlayer.create(v.getContext(), Uri.parse(files[audioFileIndex].getPath()));
 //                        player = MediaPlayer.create(v.getContext(), R.raw.long_bruh); //the og sound i used for testing
                         setupAudio();
                     }
@@ -104,13 +106,15 @@ public class MainActivity extends AppCompatActivity {
 
         back_btn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                Log.d("printing", "to see in logcat");
+                audioFileIndex = getNextorPriviousIndex(-1, audioFileIndex, files.length -1);
+                setupAudio();
             }
         });
 
         next_btn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                Log.d("printing", "to see in logcat");
+                audioFileIndex = getNextorPriviousIndex(1, audioFileIndex, files.length -1);
+                setupAudio();
             }
         });
 
@@ -145,12 +149,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //any time new audio is gonna be played, this function should be called
-    public static void setupAudio() {
-//        player = MediaPlayer.create(this, Uri.parse(files[audioFileIndex].getPath())); //dosnt work rn, but need it to
+    public void setupAudio() {
+        if (player != null) {
+            player.pause();
+            play_pause_btn.setImageResource(R.drawable.play_img);
+            play = true;
+        }
+        player = MediaPlayer.create(MainActivity.this, Uri.parse(files[audioFileIndex].getPath())); //dosnt work rn, but need it to
         audioName.setText(files[audioFileIndex].getName().substring(0, files[audioFileIndex].getName().lastIndexOf(".")));
         audioDuration = player.getDuration(); // gets length of audio clip
         audioDurationText.setText(getTimeLayout(audioDuration));
         getAudioPic(files[audioFileIndex].getPath());
+        audioCurrentTime.setText(getTimeLayout(0));
+        timeBar.setProgress(0);
     }
 
     //method to get the albumcover from mp3 files
@@ -210,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
     final Runnable mUpdateTime = new Runnable() {
         public void run() {
             if (player.isPlaying()) {
+//            if (!play) {
                 //updates the text displaying the current time
                 int timeOfAudio = player.getCurrentPosition();
                 audioCurrentTime.setText(getTimeLayout(timeOfAudio));
