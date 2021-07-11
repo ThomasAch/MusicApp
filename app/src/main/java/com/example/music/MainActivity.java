@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         //button i sometimes use to test stuff
         testBtn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                Log.d("printing", "to see in logcat");
+                Log.d("printing", "player:" + player);
             }
         });
 
@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 // stops touching the SeekBar
             }
         });
+
     }
 
     //any time new audio is gonna be played, this function should be called
@@ -162,6 +163,17 @@ public class MainActivity extends AppCompatActivity {
         getAudioPic(files[audioFileIndex].getPath());
         audioCurrentTime.setText(getTimeLayout(0));
         timeBar.setProgress(0);
+
+        //https://stackoverflow.com/a/7369642
+        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer player) {
+                audioFileIndex = getNextorPriviousIndex(1, audioFileIndex, files.length -1);
+                setupAudio();
+                play_pause_btn.performClick();
+            }
+
+        });
     }
 
     //method to get the albumcover from mp3 files
