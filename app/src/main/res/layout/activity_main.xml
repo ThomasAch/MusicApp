@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000"
     tools:context=".MainActivity">
 
     <ImageButton
@@ -33,11 +34,13 @@
 
     <Button
         android:id="@+id/next_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:background="@drawable/skip_next_img"
-        android:backgroundTint="#00B0FF"
+        android:backgroundTint="#FFF"
         android:textColor="#FFFFFF"
+        android:textColorHint="#FFFFFF"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/play_pause_btn"
@@ -45,11 +48,12 @@
 
     <Button
         android:id="@+id/back_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:background="@drawable/skip_previous_img"
-        android:backgroundTint="#00B0FF"
+        android:backgroundTint="#FFF"
         android:textColor="#FFFFFF"
+        android:textColorHint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/play_pause_btn"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,6 +77,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Test"
+        android:visibility="invisible"
+        tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="16dp" />
 
@@ -84,13 +90,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_gallery" />
+        app:srcCompat="@drawable/ic_drawing"
+        tools:srcCompat="@drawable/ic_drawing" />
 
     <SeekBar
         android:id="@+id/timeBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:max="10000"
+        android:thumbTint="#FFF"
+        android:progressTint="#FFF"
+        android:progressBackgroundTint="#FFF"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toStartOf="@+id/audioDuration"
         app:layout_constraintStart_toEndOf="@+id/audioCurrentTime"
@@ -101,7 +111,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:text="00:00"
+        android:text="0:00"
+        android:textColor="#FFF"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/timeBar"
@@ -112,7 +123,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="00:00"
+        android:text="0:00"
+        android:textColor="#FFF"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/audio_name" />

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         // not entirely sure what this does, but i think it is used for getting the correct screen? just guessing tbh
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        v.setBackgroundColor(Color.argb(255, 0, 255, 255));
 
         // a bunch of views objects that i need to reference
         play_pause_btn = (ImageButton) findViewById(R.id.play_pause_btn);
@@ -196,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
             audioCoverImage.setImageResource(R.drawable.play_img); //any default cover resourse folder
         }
 
-        audioCoverImage.setAdjustViewBounds(true);
+//        audioCoverImage.setAdjustViewBounds(true);
 //        coverart.setLayoutParams(new LinearLayout.LayoutParams(500, 500));
     }
 
