@@ -13,7 +13,8 @@
         android:layout_height="60dp"
         android:alpha="100"
         android:background="@drawable/round_button"
-        android:backgroundTint="#00B0FF"
+        android:backgroundTint="#FFFFFF"
+        android:tint="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,20 +23,21 @@
 
     <View
         android:id="@+id/divider"
-        android:layout_width="409dp"
+        android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.776" />
+        app:layout_constraintVertical_bias="0.756" />
 
     <Button
         android:id="@+id/next_btn"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="@drawable/skip_next_img"
         android:backgroundTint="#FFF"
         android:textColor="#FFFFFF"
@@ -48,8 +50,8 @@
 
     <Button
         android:id="@+id/back_btn"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="@drawable/skip_previous_img"
         android:backgroundTint="#FFF"
         android:textColor="#FFFFFF"
@@ -62,9 +64,9 @@
 
     <TextView
         android:id="@+id/audio_name"
-        android:layout_width="wrap_content"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:text="."
+        android:textColor="#FFF"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="parent"
@@ -98,9 +100,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:max="10000"
-        android:thumbTint="#FFF"
-        android:progressTint="#FFF"
         android:progressBackgroundTint="#FFF"
+        android:progressTint="#FFF"
+        android:thumbTint="#FFF"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toStartOf="@+id/audioDuration"
         app:layout_constraintStart_toEndOf="@+id/audioCurrentTime"
@@ -128,5 +130,18 @@
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/audio_name" />
+
+    <Button
+        android:id="@+id/shuffle_btn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:backgroundTint="#00000000"
+        android:drawableTint="#00FFFFFF"
+        android:foreground="@drawable/shuffle_img_dark"
+        android:foregroundTint="#8C8C8C"
+        app:layout_constraintBottom_toTopOf="@+id/back_btn"
+        app:layout_constraintEnd_toStartOf="@+id/play_pause_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timeBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@ package com.example.music;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -21,6 +22,9 @@ import android.widget.TextView;
 //import android.os.Vibrator;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,8 +39,11 @@ public class MainActivity extends AppCompatActivity {
 
     //variables that I need to be accessed throughout the class
     static int audioDuration;
+    static int timeOfAudio;
     static boolean play = true;
+    static boolean shuffle = false;
     static int audioFileIndex = 0;
+    static File[] shuffleFiles;
 
     //get the files in the music folder
 //      https://stackoverflow.com/questions/8646984/how-to-list-files-in-an-android-directory
@@ -60,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         play_pause_btn = (ImageButton) findViewById(R.id.play_pause_btn);
         final Button back_btn = (Button) findViewById(R.id.back_btn);
         final Button next_btn = (Button) findViewById(R.id.next_btn);
+        final Button shuffle_btn = (Button) findViewById(R.id.shuffle_btn);
         final Button testBtn = (Button) findViewById(R.id.testBtn);
         audioName = (TextView) findViewById(R.id.audio_name);
         audioDurationText = (TextView) findViewById(R.id.audioDuration);
@@ -70,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         //button i sometimes use to test stuff
         testBtn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                Log.d("printing", "player:" + player);
+//                Log.d("printing", "player:" + player);
             }
         });
 
@@ -93,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     player.start();
 
                     play = false;
-                    }
+                }
 
                 else{
                     play_pause_btn.setImageResource(R.drawable.play_img);
@@ -118,6 +126,23 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 audioFileIndex = getNextorPriviousIndex(1, audioFileIndex, files.length -1);
                 setupAudio();
+            }
+        });
+
+        shuffle_btn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                if (!shuffle) {
+                    shuffle = true;
+                    shuffle_btn.setForegroundTintList(ColorStateList.valueOf(Color.argb(255, 255, 255, 255)));
+
+                    shuffleFiles = files;
+                    Collections.shuffle(Arrays.asList(shuffleFiles));
+                    setupAudio();
+                }
+                else {
+                    shuffle = false;
+                    shuffle_btn.setForegroundTintList(ColorStateList.valueOf(Color.argb(255, 140, 140, 140)));
+                }
             }
         });
 
@@ -159,11 +184,21 @@ public class MainActivity extends AppCompatActivity {
             play_pause_btn.setImageResource(R.drawable.play_img);
             play = true;
         }
-        player = MediaPlayer.create(MainActivity.this, Uri.parse(files[audioFileIndex].getPath())); //dosnt work rn, but need it to
-        audioName.setText(files[audioFileIndex].getName().substring(0, files[audioFileIndex].getName().lastIndexOf(".")));
+        //used for swaping back and forth between
+        File[] setUpFiles;
+        if (shuffle) {
+            setUpFiles = shuffleFiles;
+        }
+        else {
+            setUpFiles = files;
+        }
+
+        Log.d("setup", "audioFileIndex:" + audioFileIndex);
+        player = MediaPlayer.create(MainActivity.this, Uri.parse(setUpFiles[audioFileIndex].getPath())); //sets up the player
+        audioName.setText(setUpFiles[audioFileIndex].getName().substring(0, setUpFiles[audioFileIndex].getName().lastIndexOf(".")));
         audioDuration = player.getDuration(); // gets length of audio clip
         audioDurationText.setText(getTimeLayout(audioDuration));
-        getAudioPic(files[audioFileIndex].getPath());
+        getAudioPic(setUpFiles[audioFileIndex].getPath());
         audioCurrentTime.setText(getTimeLayout(0));
         timeBar.setProgress(0);
 
@@ -171,9 +206,12 @@ public class MainActivity extends AppCompatActivity {
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer player) {
-                audioFileIndex = getNextorPriviousIndex(1, audioFileIndex, files.length -1);
-                setupAudio();
-                play_pause_btn.performClick();
+                Log.d("times", "timeOfAudio:" + timeOfAudio + "    audioDuration:" + audioDuration);
+                if (timeOfAudio >= audioDuration){
+                    audioFileIndex = getNextorPriviousIndex(1, audioFileIndex, setUpFiles.length -1);
+                    setupAudio();
+                    play_pause_btn.performClick();
+                }
             }
 
         });
@@ -238,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
             if (player.isPlaying()) {
 //            if (!play) {
                 //updates the text displaying the current time
-                int timeOfAudio = player.getCurrentPosition();
+                timeOfAudio = player.getCurrentPosition();
                 audioCurrentTime.setText(getTimeLayout(timeOfAudio));
 
                 //finding how much of the song has been played and updating the progress bar
@@ -246,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
                 timeBar.setProgress((int) audioProgress);
 
                 audioCurrentTime.postDelayed(this, 100); // how often this loop is done (the lower the speed, the smoother the progress bar)
-                Log.d("Test", "player.getCurrentPosition():" + player.getCurrentPosition() + "    timeOfAudio:" + timeOfAudio + "     audioDuration:" + audioDuration + "      audioProgress:" + audioProgress);
+//                Log.d("Test", "player.getCurrentPosition():" + player.getCurrentPosition() + "    timeOfAudio:" + timeOfAudio + "     audioDuration:" + audioDuration + "      audioProgress:" + audioProgress);
             }else {
                 audioCurrentTime.removeCallbacks(this); // litearlly no clue what this does. when i remove it, nothing seems to happen, but was par of stack code soooo yea
             }
