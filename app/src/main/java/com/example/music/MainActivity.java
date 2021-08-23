@@ -1,7 +1,15 @@
 package com.example.music;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationBuilderWithBuilderAccessor;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +17,7 @@ import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Environment;
@@ -19,6 +28,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 //import android.os.Vibrator;
 
 import java.io.File;
@@ -42,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     static int timeOfAudio;
     static boolean play = true;
     static boolean shuffle = false;
+    static boolean loop = false;
+    static boolean skip = false;
     static int audioFileIndex = 0;
     static File[] shuffleFiles;
 
@@ -54,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
 //        Log.d("Files", "Size: "+ files.length);
 //        for (int i = 0; i < files.length; i++){Log.d("Files", "FileName:" + files[i].getName());}
 //        Log.d("File", files[audioFileIndex].getPath());
+
+    static NotificationManagerCompat notificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +82,42 @@ public class MainActivity extends AppCompatActivity {
         final Button back_btn = (Button) findViewById(R.id.back_btn);
         final Button next_btn = (Button) findViewById(R.id.next_btn);
         final Button shuffle_btn = (Button) findViewById(R.id.shuffle_btn);
+        final Button loop_btn = (Button) findViewById(R.id.loop_btn);
         final Button testBtn = (Button) findViewById(R.id.testBtn);
         audioName = (TextView) findViewById(R.id.audio_name);
         audioDurationText = (TextView) findViewById(R.id.audioDuration);
         audioCurrentTime = (TextView) findViewById(R.id.audioCurrentTime);
         timeBar = (SeekBar) findViewById(R.id.timeBar);
         audioCoverImage = (ImageView) findViewById(R.id.audioCoverImage);
+
+
+        // https://developer.android.com/training/notify-user/build-notification#Priority
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Audio Channel";
+//            String description = "Used for audio based notifications";
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+
+            NotificationChannel notificationChannel = new NotificationChannel("audioChannel", name, NotificationManager.IMPORTANCE_LOW);
+//            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+//            notificationChannel.setSound(null, null);
+//            notificationChannel.setShowBadge(false);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "audioChannel")
+                .setSmallIcon(R.drawable.ic_drawing)
+                .setContentTitle("textTitle1")
+                .setContentText("textContent2")
+                .setShowWhen(false)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        notificationManager = NotificationManagerCompat.from(this);
+
+        notificationManager.notify(1, builder.build());
 
         //button i sometimes use to test stuff
         testBtn.setOnClickListener(new View.OnClickListener(){
@@ -117,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
         back_btn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
+                skip = true;
                 audioFileIndex = getNextorPriviousIndex(-1, audioFileIndex, files.length -1);
                 setupAudio();
             }
@@ -124,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
 
         next_btn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
+                skip = true;
                 audioFileIndex = getNextorPriviousIndex(1, audioFileIndex, files.length -1);
                 setupAudio();
             }
@@ -142,6 +188,23 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     shuffle = false;
                     shuffle_btn.setForegroundTintList(ColorStateList.valueOf(Color.argb(255, 140, 140, 140)));
+                }
+            }
+        });
+
+        loop_btn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                if (!loop && player != null) {
+                    loop = true;
+                    loop_btn.setForegroundTintList(ColorStateList.valueOf(Color.argb(255, 255, 255, 255)));
+
+//                    player.setLooping(true);
+                }
+                else {
+                    loop = false;
+                    loop_btn.setForegroundTintList(ColorStateList.valueOf(Color.argb(255, 140, 140, 140)));
+
+//                    player.setLooping(false);
                 }
             }
         });
@@ -175,7 +238,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        audioName.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("audio title", audioName.getText());
+                clipboard.setPrimaryClip(clip);
+
+                Toast toast = Toast.makeText(getApplicationContext(), "Copied to clipboard", Toast.LENGTH_SHORT);
+                toast.show();
+
+            }
+        });
+
     }
+
+    @Override
+    protected  void onDestroy() {
+
+        super.onDestroy();
+        notificationManager.cancel(1);
+    }
+
 
     //any time new audio is gonna be played, this function should be called
     public void setupAudio() {
@@ -206,12 +289,21 @@ public class MainActivity extends AppCompatActivity {
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer player) {
-                Log.d("times", "timeOfAudio:" + timeOfAudio + "    audioDuration:" + audioDuration);
-                if (timeOfAudio >= audioDuration){
-                    audioFileIndex = getNextorPriviousIndex(1, audioFileIndex, setUpFiles.length -1);
-                    setupAudio();
-                    play_pause_btn.performClick();
+                Log.d("abc", "timeOfAudio:" + timeOfAudio + "    audioDuration:" + audioDuration);
+//                if (timeOfAudio >= audioDuration - 200){
+                if (!skip) {
+                    if (loop) {
+                        player.seekTo(0);
+                        player.start();
+                    }
+                    else{
+                        Log.d("abc","next");
+                        audioFileIndex = getNextorPriviousIndex(1, audioFileIndex, setUpFiles.length -1);
+                        setupAudio();
+                        play_pause_btn.performClick();
+                    }
                 }
+                skip = false;
             }
 
         });
@@ -234,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            audioCoverImage.setImageResource(R.drawable.play_img); //any default cover resourse folder
+            audioCoverImage.setImageResource(R.drawable.ic_drawing); //any default cover resourse folder
         }
 
 //        audioCoverImage.setAdjustViewBounds(true);
