@@ -29,10 +29,9 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.756" />
+        app:layout_constraintVertical_bias="0.75" />
 
     <Button
         android:id="@+id/next_btn"
@@ -56,6 +55,7 @@
         android:backgroundTint="#FFF"
         android:textColor="#FFFFFF"
         android:textColorHint="#FFFFFF"
+        android:tint="#FFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/play_pause_btn"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,9 +66,9 @@
         android:id="@+id/audio_name"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:textColor="#FFF"
         android:textSize="18sp"
-        android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -89,48 +89,13 @@
         android:id="@+id/audioCoverImage"
         android:layout_width="200dp"
         android:layout_height="200dp"
+        android:layout_marginBottom="6dp"
         app:layout_constraintBottom_toTopOf="@+id/audio_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_drawing"
         tools:srcCompat="@drawable/ic_drawing" />
-
-    <SeekBar
-        android:id="@+id/timeBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:max="10000"
-        android:progressBackgroundTint="#FFF"
-        android:progressTint="#FFF"
-        android:thumbTint="#FFF"
-        app:layout_constraintBottom_toTopOf="@+id/divider"
-        app:layout_constraintEnd_toStartOf="@+id/audioDuration"
-        app:layout_constraintStart_toEndOf="@+id/audioCurrentTime"
-        app:layout_constraintTop_toBottomOf="@+id/audio_name" />
-
-    <TextView
-        android:id="@+id/audioDuration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:text="0:00"
-        android:textColor="#FFF"
-        app:layout_constraintBottom_toTopOf="@+id/divider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/timeBar"
-        app:layout_constraintTop_toBottomOf="@+id/audio_name" />
-
-    <TextView
-        android:id="@+id/audioCurrentTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="0:00"
-        android:textColor="#FFF"
-        app:layout_constraintBottom_toTopOf="@+id/divider"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/audio_name" />
 
     <Button
         android:id="@+id/shuffle_btn"
@@ -143,7 +108,7 @@
         app:layout_constraintBottom_toTopOf="@+id/back_btn"
         app:layout_constraintEnd_toStartOf="@+id/play_pause_btn"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeBar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <Button
         android:id="@+id/loop_btn"
@@ -156,6 +121,45 @@
         app:layout_constraintBottom_toTopOf="@+id/next_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/play_pause_btn"
-        app:layout_constraintTop_toBottomOf="@+id/timeBar" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.9">
+
+        <TextView
+            android:id="@+id/audioCurrentTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:text="0:00"
+            android:textColor="#FFF" />
+
+        <SeekBar
+            android:id="@+id/timeBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="10000"
+            android:progressBackgroundTint="#FFF"
+            android:progressTint="#FFF"
+            android:thumbTint="#FFF" />
+
+        <TextView
+            android:id="@+id/audioDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0:00"
+            android:textColor="#FFF" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
